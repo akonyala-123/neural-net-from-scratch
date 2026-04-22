@@ -9,10 +9,31 @@ class NeuralNetwork:
         #layer 2 weights and biases 
         self.W2 = np.random.randn(hidden_size, output_size) * 0.01
         self.b2 = np.zeros((1, output_size))
+    
+    #Activation function - determines how strongly a neuron should fire 
+    def relu(self, x): 
+        return np.maximum(0, x)
+
+    #Softmax will run on the final layer and convert activations to probablities
+    def softmax(self, x):
+        exp = np.exp(x - np.max(x, axis=1, keepdims=True))
+        return exp / exp.sum(axis=1, keepdims=True)
+
+    def forward(self, X):
+        #Compute activation for neurons in layer 1
+        self.z1 = X @ self.W1 + self.b1 
+        self.a1 = self.relu(self.z1)
+        #Compute activation for neurons in layer 2 
+        self.z2 = self.a1 @ self.W2 + self.b2
+        self.a2 = self.softmax(self.z2)
+        return self.a2
 
 if __name__ == "__main__":
         nn = NeuralNetwork(784, 128, 10)
-        print(f"W1 shape: {nn.W1.shape}")
-        print(f"b1 shape: {nn.b1.shape}")
-        print(f"W2 shape: {nn.W2.shape}")
-        print(f"b2 shape: {nn.b2.shape}")
+        #This is a random image 
+        X = np.random.randn(1, 784)
+        output = nn.forward(X)
+        print(f"output shape: {output.shape}")
+        print(f"output: {output}")
+        print(f"sum: {output.sum():.4f}")
+        print(f"predicted digit: {np.argmax(output)}")
