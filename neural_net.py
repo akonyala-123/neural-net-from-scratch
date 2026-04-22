@@ -28,12 +28,20 @@ class NeuralNetwork:
         self.a2 = self.softmax(self.z2)
         return self.a2
 
+    def loss(self, predictions, labels): 
+        n = predictions.shape[0]
+        predictions = np.clip(predictions, 1e-10, 1.0)
+        return -np.sum(labels * np.log(predictions)) / n
+
 if __name__ == "__main__":
         nn = NeuralNetwork(784, 128, 10)
         #This is a random image 
         X = np.random.randn(1, 784)
         output = nn.forward(X)
-        print(f"output shape: {output.shape}")
+        label = np.zeros((1, 10))
+        label[0, 7] = 1
+        loss = nn.loss(output, label)
         print(f"output: {output}")
-        print(f"sum: {output.sum():.4f}")
+        print(f"correct digit: 7")
         print(f"predicted digit: {np.argmax(output)}")
+        print(f"loss: {loss:.4f}")
